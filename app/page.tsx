@@ -107,10 +107,13 @@ export default function CatalogoPage() {
     setEnviando(true);
     setError('');
 
+    const telefonoLimpio = telefono.trim();
+
     const { error: dbError } = await supabase.from('appointments').insert([
       {
         client_name: nombre.trim(),
-        phone: telefono.trim(),
+        phone: telefonoLimpio,
+        client_phone: telefonoLimpio,
         service_name: servicioSeleccionado.nombre,
         appointment_date: fecha,
         start_time: hora,
