@@ -11,7 +11,6 @@ const supabase = createClient(
 interface Servicio {
   id: string;
   nombre: string;
-  precio: string;
   descripcion: string;
   emoji: string;
 }
@@ -20,63 +19,54 @@ const SERVICIOS: Servicio[] = [
   {
     id: 'pintado-en-gel',
     nombre: 'Pintado en Gel',
-    precio: 'RD$ 800',
-    descripcion: 'Esmaltado en gel de alto brillo y larga duración sobre uña natural.',
+    descripcion: 'Esmaltado en gel de alto brillo y acabado uniforme sobre uña natural.',
     emoji: '💅',
   },
   {
     id: 'acrilicas-full',
     nombre: 'Uñas Acrílicas Full Set',
-    precio: 'RD$ 1,500',
     descripcion: 'Set completo de acrílico con forma a elección y acabado profesional.',
     emoji: '✨',
   },
   {
     id: 'retoque-acrilico',
     nombre: 'Retoque de Acrílico',
-    precio: 'RD$ 1,000',
     descripcion: 'Relleno de crecimiento, limado, nivelación y nuevo esmaltado.',
     emoji: '💎',
   },
   {
     id: 'polygel',
     nombre: 'Sistema Polygel',
-    precio: 'RD$ 1,400',
-    descripcion: 'Extensiones ligeras y resistentes con acabado natural o estilizado.',
+    descripcion: 'Extensiones ligeras y resistentes con acabado limpio y estilizado.',
     emoji: '🌸',
   },
   {
     id: 'manicure-clasica',
     nombre: 'Manicura Clásica',
-    precio: 'RD$ 600',
     descripcion: 'Limpieza de cutículas, limado, hidratación y esmaltado tradicional.',
     emoji: '🤍',
   },
   {
     id: 'pedicure-spa',
     nombre: 'Pedicura Spa',
-    precio: 'RD$ 1,200',
-    descripcion: 'Relajación de pies, exfoliación, limpieza y esmaltado.',
+    descripcion: 'Cuidado relajante de pies, exfoliación, limpieza y acabado suave.',
     emoji: '🦶',
   },
   {
     id: 'pedicure-gel',
     nombre: 'Pedicura en Gel',
-    precio: 'RD$ 1,350',
     descripcion: 'Cuidado completo de pies con esmaltado en gel de larga duración.',
     emoji: '🌺',
   },
   {
     id: 'diseno-nail-art',
     nombre: 'Diseño / Nail Art',
-    precio: 'RD$ 300',
     descripcion: 'Detalles personalizados, francesas, pedrería o efectos especiales.',
     emoji: '🎨',
   },
   {
     id: 'retiro-unas',
     nombre: 'Retiro Seguro de Uñas',
-    precio: 'RD$ 500',
     descripcion: 'Retiro cuidadoso de acrílico o gel protegiendo la uña natural.',
     emoji: '🧴',
   },
@@ -142,54 +132,58 @@ export default function CatalogoPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#fdf6f9] pb-16">
-      <header className="bg-white border-b border-pink-100 sticky top-0 z-10 shadow-sm">
+    <main className="min-h-screen bg-[#0f111a] text-white pb-16">
+      <header className="bg-[#161926] border-b border-white/10 sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">💅</span>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-xl shadow-sm">
+              💅
+            </div>
             <div>
-              <span className="font-bold text-lg text-[#801b48] block leading-none">
+              <span className="font-bold text-base tracking-wide text-white block leading-tight">
                 MACDONA NAILS
               </span>
-              <span className="text-[11px] text-gray-500">Catálogo de Servicios</span>
+              <span className="text-[11px] uppercase tracking-wider text-gray-400">
+                Catálogo de Servicios
+              </span>
             </div>
           </div>
           <a
             href="/citas"
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-pink-50 text-[#801b48] hover:bg-pink-100 transition-colors"
+            className="text-xs font-semibold px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-gray-200 transition-colors"
           >
             Panel Admin
           </a>
         </div>
       </header>
 
-      <section className="max-w-5xl mx-auto px-4 pt-8 pb-4 text-center">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800">
+      <section className="max-w-5xl mx-auto px-4 pt-9 pb-5 text-center">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[#e05288] mb-1">
+          Sistema de Gestión y Citas
+        </p>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
           Catálogo de Servicios
         </h1>
-        <p className="text-xs sm:text-sm text-gray-600 mt-1.5">
-          Elige el servicio que deseas y presiona <strong>Agendar cita</strong> para enviar tu solicitud.
+        <p className="text-xs sm:text-sm text-gray-400 mt-1.5 max-w-lg mx-auto">
+          Selecciona el servicio que deseas realizar y presiona <strong className="text-gray-200">Agendar cita</strong> para enviar tu solicitud.
         </p>
       </section>
 
-      <section className="max-w-5xl mx-auto px-4 mt-4">
+      <section className="max-w-5xl mx-auto px-4 mt-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {SERVICIOS.map((servicio) => (
             <article
               key={servicio.id}
-              className="bg-white rounded-2xl p-5 border border-pink-100 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
+              className="bg-white text-gray-800 rounded-2xl p-5 border border-gray-200 shadow-lg flex flex-col justify-between"
             >
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-3xl">{servicio.emoji}</span>
-                  <span className="text-xs font-bold text-[#801b48] bg-pink-50 px-3 py-1 rounded-full border border-pink-200">
-                    {servicio.precio}
-                  </span>
+                <div className="w-11 h-11 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-2xl mb-3.5">
+                  {servicio.emoji}
                 </div>
-                <h2 className="text-base font-bold text-gray-800">
+                <h2 className="text-base font-bold text-[#801b48]">
                   {servicio.nombre}
                 </h2>
-                <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+                <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
                   {servicio.descripcion}
                 </p>
               </div>
@@ -197,7 +191,7 @@ export default function CatalogoPage() {
               <button
                 type="button"
                 onClick={() => abrirAgendaConServicio(servicio)}
-                className="mt-5 w-full py-2.5 bg-[#c92a68] hover:bg-[#b02259] text-white font-semibold text-xs rounded-xl transition-colors cursor-pointer"
+                className="mt-5 w-full py-2.5 bg-[#c92a68] hover:bg-[#b02259] text-white font-semibold text-xs rounded-lg shadow-sm transition-colors cursor-pointer"
               >
                 Agendar cita
               </button>
@@ -207,8 +201,8 @@ export default function CatalogoPage() {
       </section>
 
       {servicioSeleccionado && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative border border-gray-100">
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white text-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative border border-gray-200">
             <button
               type="button"
               onClick={cerrarModal}
@@ -222,87 +216,88 @@ export default function CatalogoPage() {
                 <div className="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
                   ✓
                 </div>
-                <h3 className="text-lg font-bold text-gray-800">
+                <h3 className="text-lg font-bold text-gray-900">
                   ¡Solicitud enviada!
                 </h3>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Tu cita de <strong>{servicioSeleccionado.nombre}</strong> para el{' '}
-                  <strong>{fecha}</strong> a las <strong>{hora}</strong> ya fue enviada al administrador.
+                  Tu cita de <strong className="text-gray-900">{servicioSeleccionado.nombre}</strong> para el{' '}
+                  <strong className="text-gray-900">{fecha}</strong> a las{' '}
+                  <strong className="text-gray-900">{hora}</strong> ya fue enviada al administrador.
                 </p>
                 <button
                   type="button"
                   onClick={cerrarModal}
-                  className="mt-3 w-full py-2.5 bg-[#c92a68] hover:bg-[#b02259] text-white text-xs font-semibold rounded-xl cursor-pointer"
+                  className="mt-3 w-full py-2.5 bg-[#c92a68] hover:bg-[#b02259] text-white text-xs font-semibold rounded-lg cursor-pointer"
                 >
                   Volver al catálogo
                 </button>
               </div>
             ) : (
               <>
-                <div className="mb-4 pb-3 border-b border-gray-100">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#c92a68]">
+                <div className="mb-4 pb-3 border-b border-gray-200">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#801b48]">
                     Servicio seleccionado
                   </span>
-                  <h3 className="text-lg font-bold text-gray-800 mt-0.5">
+                  <h3 className="text-lg font-bold text-gray-900 mt-0.5">
                     {servicioSeleccionado.nombre}
                   </h3>
-                  <p className="text-xs text-gray-500">
-                    {servicioSeleccionado.precio} · {servicioSeleccionado.descripcion}
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {servicioSeleccionado.descripcion}
                   </p>
                 </div>
 
                 <form onSubmit={handleAgendar} className="space-y-3 text-left">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    <label className="block text-xs font-bold text-gray-700 mb-1">
                       Nombre
                     </label>
                     <input
                       type="text"
-                      placeholder="Nombre de la clienta"
+                      placeholder="Ingrese su nombre"
                       value={nombre}
                       onChange={(e) => setNombre(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#c92a68]"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    <label className="block text-xs font-bold text-gray-700 mb-1">
                       Teléfono / WhatsApp
                     </label>
                     <input
                       type="tel"
-                      placeholder="Ej. 8095551234"
+                      placeholder="Ingrese su número"
                       value={telefono}
                       onChange={(e) => setTelefono(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#c92a68]"
                       required
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2.5">
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      <label className="block text-xs font-bold text-gray-700 mb-1">
                         Fecha
                       </label>
                       <input
                         type="date"
                         value={fecha}
                         onChange={(e) => setFecha(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#c92a68]"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      <label className="block text-xs font-bold text-gray-700 mb-1">
                         Hora
                       </label>
                       <input
                         type="time"
                         value={hora}
                         onChange={(e) => setHora(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#c92a68]"
                         required
                       />
                     </div>
@@ -317,7 +312,7 @@ export default function CatalogoPage() {
                   <button
                     type="submit"
                     disabled={enviando}
-                    className="w-full mt-2 py-2.5 bg-[#c92a68] hover:bg-[#b02259] text-white font-semibold text-xs rounded-xl transition-colors disabled:opacity-50 cursor-pointer"
+                    className="w-full mt-2 py-2.5 bg-[#c92a68] hover:bg-[#b02259] text-white font-semibold text-xs rounded-lg shadow-md transition-colors disabled:opacity-50 cursor-pointer"
                   >
                     {enviando ? 'Enviando cita...' : 'Enviar cita'}
                   </button>
