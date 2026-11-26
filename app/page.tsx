@@ -46,8 +46,8 @@ const SERVICIOS: Servicio[] = [
     emoji: '💎',
   },
   {
-    id: 'polygel',
-    nombre: 'Sistema Polygel',
+    id: 'sistema-sin-olor',
+    nombre: 'Sistema sin olor',
     descripcion: 'Extensiones ligeras y resistentes con acabado limpio y estilizado.',
     emoji: '🌸',
   },
