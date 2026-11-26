@@ -159,10 +159,10 @@ export default function CatalogoPage() {
     } else {
       const textoWA = encodeURIComponent(
         `Hola Macdona Nails, acabo de solicitar una cita desde la web.\n\n` +
-        `👤 *Cliente:* ${nombre.trim()}\n` +
-        `💅 *Servicio:* ${servicioSeleccionado.nombre}\n` +
-        `📅 *Fecha:* ${fecha}\n` +
-        `⏰ *Hora:* ${hora}`
+          `👤 *Cliente:* ${nombre.trim()}\n` +
+          `💅 *Servicio:* ${servicioSeleccionado.nombre}\n` +
+          `📅 *Fecha:* ${fecha}\n` +
+          `⏰ *Hora:* ${hora}`
       );
       setUrlWhatsApp(`https://wa.me/1${TELEFONO_SALON_WHATSAPP}?text=${textoWA}`);
       setMensajeExito(true);
@@ -211,26 +211,18 @@ export default function CatalogoPage() {
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setModalConsultaAbierto(true);
-                setCitasEncontradas(null);
-                setErrorConsulta('');
-                setTelefonoConsulta('');
-              }}
-              className="text-xs font-semibold px-3 py-2 rounded-lg bg-[#c92a68]/20 hover:bg-[#c92a68]/30 text-[#e05288] border border-[#c92a68]/40 transition-colors cursor-pointer"
-            >
-              Consultar mi cita
-            </button>
-            <a
-              href="/citas"
-              className="text-xs font-semibold px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-gray-200 transition-colors"
-            >
-              Panel Admin
-            </a>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setModalConsultaAbierto(true);
+              setCitasEncontradas(null);
+              setErrorConsulta('');
+              setTelefonoConsulta('');
+            }}
+            className="text-xs font-semibold px-3 py-2 rounded-lg bg-[#c92a68]/20 hover:bg-[#c92a68]/30 text-[#e05288] border border-[#c92a68]/40 transition-colors cursor-pointer"
+          >
+            Consultar mi cita
+          </button>
         </div>
       </header>
 
@@ -242,7 +234,8 @@ export default function CatalogoPage() {
           Catálogo de Servicios
         </h1>
         <p className="text-xs sm:text-sm text-gray-400 mt-1.5 max-w-lg mx-auto">
-          Selecciona el servicio que deseas realizar y presiona <strong className="text-gray-200">Agendar cita</strong> para enviar tu solicitud.
+          Selecciona el servicio que deseas realizar y presiona{' '}
+          <strong className="text-gray-200">Agendar cita</strong> para enviar tu solicitud.
         </p>
       </section>
 
