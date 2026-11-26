@@ -8,11 +8,22 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+const TELEFONO_SALON_WHATSAPP = '8098288392'; // Número para recibir notificaciones
+
 interface Servicio {
   id: string;
   nombre: string;
   descripcion: string;
   emoji: string;
+}
+
+interface CitaEncontrada {
+  id: string;
+  client_name: string;
+  service_name: string;
+  appointment_date: string;
+  start_time: string;
+  status: string;
 }
 
 const SERVICIOS: Servicio[] = [
@@ -75,6 +86,7 @@ const SERVICIOS: Servicio[] = [
 export default function CatalogoPage() {
   const [servicioSeleccionado, setServicioSeleccionado] = useState<Servicio | null>(null);
 
+  // Estados Formulario Agenda
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [fecha, setFecha] = useState('');
@@ -83,6 +95,14 @@ export default function CatalogoPage() {
   const [enviando, setEnviando] = useState(false);
   const [mensajeExito, setMensajeExito] = useState(false);
   const [error, setError] = useState('');
+  const [urlWhatsApp, setUrlWhatsApp] = useState('');
+
+  // Estados Modal Consulta de Citas
+  const [modalConsultaAbierto, setModalConsultaAbierto] = useState(false);
+  const [telefonoConsulta, setTelefonoConsulta] = useState('');
+  const [buscandoCitas, setBuscandoCitas] = useState(false);
+  const [citasEncontradas, setCitasEncontradas] = useState<CitaEncontrada[] | null>(null);
+  const [errorConsulta, setErrorConsulta] = useState('');
 
   const abrirAgendaConServicio = (servicio: Servicio) => {
     setServicioSeleccionado(servicio);
@@ -90,7 +110,7 @@ export default function CatalogoPage() {
     setError('');
   };
 
-  const cerrarModal = () => {
+  const cerrarModalAgenda = () => {
     setServicioSeleccionado(null);
     setNombre('');
     setTelefono('');
@@ -98,6 +118,7 @@ export default function CatalogoPage() {
     setHora('');
     setError('');
     setMensajeExito(false);
+    setUrlWhatsApp('');
   };
 
   const handleAgendar = async (e: React.FormEvent) => {
@@ -108,6 +129,11 @@ export default function CatalogoPage() {
     setError('');
 
     const telefonoLimpio = telefono.trim();
+    const [hh, mm] = hora.split(':').map(Number);
+    const horaFin =
+      Number.isFinite(hh) && Number.isFinite(mm)
+        ? `${String((hh + 1) % 24).padStart(2, '0')}:${String(mm).padStart(2, '0')}`
+        : hora;
 
     const { error: dbError } = await supabase.from('appointments').insert([
       {
@@ -117,6 +143,7 @@ export default function CatalogoPage() {
         service_name: servicioSeleccionado.nombre,
         appointment_date: fecha,
         start_time: hora,
+        end_time: horaFin,
         status: 'Pendiente',
       },
     ]);
@@ -130,7 +157,40 @@ export default function CatalogoPage() {
         setError(`No se pudo enviar la cita: ${dbError.message}`);
       }
     } else {
+      const textoWA = encodeURIComponent(
+        `Hola Macdona Nails, acabo de solicitar una cita desde la web.\n\n` +
+        `👤 *Cliente:* ${nombre.trim()}\n` +
+        `💅 *Servicio:* ${servicioSeleccionado.nombre}\n` +
+        `📅 *Fecha:* ${fecha}\n` +
+        `⏰ *Hora:* ${hora}`
+      );
+      setUrlWhatsApp(`https://wa.me/1${TELEFONO_SALON_WHATSAPP}?text=${textoWA}`);
       setMensajeExito(true);
+    }
+  };
+
+  const handleBuscarCitas = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!telefonoConsulta.trim()) return;
+
+    setBuscandoCitas(true);
+    setErrorConsulta('');
+    setCitasEncontradas(null);
+
+    const busqueda = telefonoConsulta.trim();
+
+    const { data, error: queryError } = await supabase
+      .from('appointments')
+      .select('id, client_name, service_name, appointment_date, start_time, status')
+      .or(`phone.eq.${busqueda},client_phone.eq.${busqueda}`)
+      .order('appointment_date', { ascending: false });
+
+    setBuscandoCitas(false);
+
+    if (queryError) {
+      setErrorConsulta('Error al consultar las citas. Inténtelo más tarde.');
+    } else {
+      setCitasEncontradas(data || []);
     }
   };
 
@@ -151,12 +211,26 @@ export default function CatalogoPage() {
               </span>
             </div>
           </div>
-          <a
-            href="/citas"
-            className="text-xs font-semibold px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-gray-200 transition-colors"
-          >
-            Panel Admin
-          </a>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setModalConsultaAbierto(true);
+                setCitasEncontradas(null);
+                setErrorConsulta('');
+                setTelefonoConsulta('');
+              }}
+              className="text-xs font-semibold px-3 py-2 rounded-lg bg-[#c92a68]/20 hover:bg-[#c92a68]/30 text-[#e05288] border border-[#c92a68]/40 transition-colors cursor-pointer"
+            >
+              Consultar mi cita
+            </button>
+            <a
+              href="/citas"
+              className="text-xs font-semibold px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-gray-200 transition-colors"
+            >
+              Panel Admin
+            </a>
+          </div>
         </div>
       </header>
 
@@ -203,34 +277,47 @@ export default function CatalogoPage() {
         </div>
       </section>
 
+      {/* Modal Agendar Cita */}
       {servicioSeleccionado && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
           <div className="bg-white text-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative border border-gray-200">
             <button
               type="button"
-              onClick={cerrarModal}
+              onClick={cerrarModalAgenda}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-sm font-bold cursor-pointer"
             >
               ✕
             </button>
 
             {mensajeExito ? (
-              <div className="text-center py-5 space-y-3">
-                <div className="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
+              <div className="text-center py-4 space-y-3">
+                <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto text-xl font-bold">
                   ✓
                 </div>
                 <h3 className="text-lg font-bold text-gray-900">
-                  ¡Solicitud enviada!
+                  ¡Solicitud registrada!
                 </h3>
                 <p className="text-xs text-gray-600 leading-relaxed">
                   Tu cita de <strong className="text-gray-900">{servicioSeleccionado.nombre}</strong> para el{' '}
                   <strong className="text-gray-900">{fecha}</strong> a las{' '}
-                  <strong className="text-gray-900">{hora}</strong> ya fue enviada al administrador.
+                  <strong className="text-gray-900">{hora}</strong> ha sido enviada al panel administrativo.
                 </p>
+
+                {urlWhatsApp && (
+                  <a
+                    href={urlWhatsApp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-2 shadow-sm transition-colors"
+                  >
+                    <span>💬</span> Notificar por WhatsApp
+                  </a>
+                )}
+
                 <button
                   type="button"
-                  onClick={cerrarModal}
-                  className="mt-3 w-full py-2.5 bg-[#c92a68] hover:bg-[#b02259] text-white text-xs font-semibold rounded-lg cursor-pointer"
+                  onClick={cerrarModalAgenda}
+                  className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg cursor-pointer"
                 >
                   Volver al catálogo
                 </button>
@@ -321,6 +408,100 @@ export default function CatalogoPage() {
                   </button>
                 </form>
               </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Modal Consulta de Estado de Citas */}
+      {modalConsultaAbierto && (
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white text-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative border border-gray-200">
+            <button
+              type="button"
+              onClick={() => setModalConsultaAbierto(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-sm font-bold cursor-pointer"
+            >
+              ✕
+            </button>
+
+            <h3 className="text-base font-bold text-gray-900 mb-1">
+              Consultar estado de cita
+            </h3>
+            <p className="text-xs text-gray-500 mb-4">
+              Ingresa el número de teléfono con el que realizaste la reservación.
+            </p>
+
+            <form onSubmit={handleBuscarCitas} className="space-y-3">
+              <div className="flex gap-2">
+                <input
+                  type="tel"
+                  placeholder="Ej: 8098288392"
+                  value={telefonoConsulta}
+                  onChange={(e) => setTelefonoConsulta(e.target.value)}
+                  className="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#c92a68]"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={buscandoCitas}
+                  className="px-4 py-2 bg-[#c92a68] hover:bg-[#b02259] text-white font-semibold text-xs rounded-lg transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
+                >
+                  {buscandoCitas ? 'Buscando...' : 'Buscar'}
+                </button>
+              </div>
+            </form>
+
+            {errorConsulta && (
+              <p className="text-xs text-red-600 mt-3 text-center font-medium">
+                {errorConsulta}
+              </p>
+            )}
+
+            {citasEncontradas && (
+              <div className="mt-4 pt-3 border-t border-gray-100 max-h-60 overflow-y-auto space-y-2.5">
+                {citasEncontradas.length === 0 ? (
+                  <p className="text-xs text-gray-500 text-center py-3">
+                    No se encontraron citas asociadas a este número.
+                  </p>
+                ) : (
+                  citasEncontradas.map((cita) => {
+                    const statusLower = (cita.status || '').toLowerCase();
+                    let badgeBg = 'bg-amber-100 text-amber-800';
+                    let badgeLabel = cita.status;
+
+                    if (statusLower === 'confirmada' || statusLower === 'confirmed') {
+                      badgeBg = 'bg-emerald-100 text-emerald-800';
+                      badgeLabel = 'Confirmada';
+                    } else if (statusLower === 'cancelada' || statusLower === 'cancelled') {
+                      badgeBg = 'bg-rose-100 text-rose-800';
+                      badgeLabel = 'Cancelada';
+                    } else if (statusLower === 'pendiente' || statusLower === 'pending') {
+                      badgeBg = 'bg-amber-100 text-amber-800';
+                      badgeLabel = 'Pendiente';
+                    }
+
+                    return (
+                      <div
+                        key={cita.id}
+                        className="p-3 bg-gray-50 rounded-xl border border-gray-200 text-left flex justify-between items-center"
+                      >
+                        <div>
+                          <p className="text-xs font-bold text-gray-900">
+                            {cita.service_name || 'Servicio de uñas'}
+                          </p>
+                          <p className="text-[11px] text-gray-500 mt-0.5">
+                            📅 {cita.appointment_date} · ⏰ {cita.start_time}
+                          </p>
+                        </div>
+                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${badgeBg}`}>
+                          {badgeLabel}
+                        </span>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
             )}
           </div>
         </div>
