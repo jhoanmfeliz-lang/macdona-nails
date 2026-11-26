@@ -8,7 +8,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-const TELEFONO_SALON_WHATSAPP = '8098288392'; // Número para recibir notificaciones
+const TELEFONO_SALON_WHATSAPP = '8298283763'; // Número correcto de Macdona Nails
 
 interface Servicio {
   id: string;
