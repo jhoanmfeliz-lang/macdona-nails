@@ -160,9 +160,11 @@ export default function CatalogoPage() {
       const textoWA = encodeURIComponent(
         `Hola Macdona Nails, acabo de solicitar una cita desde la web.\n\n` +
           `👤 *Cliente:* ${nombre.trim()}\n` +
+          `📱 *Teléfono:* ${telefonoLimpio}\n` +
           `💅 *Servicio:* ${servicioSeleccionado.nombre}\n` +
           `📅 *Fecha:* ${fecha}\n` +
-          `⏰ *Hora:* ${hora}`
+          `⏰ *Hora:* ${hora} (hasta ${horaFin})\n` +
+          `📌 *Estado actual:* Pendiente`
       );
       setUrlWhatsApp(`https://wa.me/1${TELEFONO_SALON_WHATSAPP}?text=${textoWA}`);
       setMensajeExito(true);
@@ -429,7 +431,7 @@ export default function CatalogoPage() {
               <div className="flex gap-2">
                 <input
                   type="tel"
-                  placeholder="Ej: 8098288392"
+                  placeholder="Ej: 8298283763"
                   value={telefonoConsulta}
                   onChange={(e) => setTelefonoConsulta(e.target.value)}
                   className="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#c92a68]"
