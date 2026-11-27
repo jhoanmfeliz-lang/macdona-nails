@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -9,6 +9,19 @@ const supabase = createClient(
 );
 
 const TELEFONO_SALON_WHATSAPP = '8298283763';
+
+const HORARIOS_BASE = [
+  '09:00',
+  '10:00',
+  '11:00',
+  '12:00',
+  '13:00',
+  '14:00',
+  '15:00',
+  '16:00',
+  '17:00',
+  '18:00',
+];
 
 interface Servicio {
   id: string;
@@ -26,6 +39,12 @@ interface CitaEncontrada {
   appointment_date: string;
   start_time: string;
   status: string;
+}
+
+interface CitaOcupada {
+  start_time: string;
+  end_time: string | null;
+  status: string | null;
 }
 
 const SERVICIOS: Servicio[] = [
@@ -103,6 +122,12 @@ const SERVICIOS: Servicio[] = [
   },
 ];
 
+function horaAMinutos(horaStr: string): number {
+  const [h, m] = horaStr.split(':').map(Number);
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return 0;
+  return h * 60 + m;
+}
+
 export default function CatalogoPage() {
   const [servicioSeleccionado, setServicioSeleccionado] = useState<Servicio | null>(null);
 
@@ -111,6 +136,10 @@ export default function CatalogoPage() {
   const [telefono, setTelefono] = useState('');
   const [fecha, setFecha] = useState('');
   const [hora, setHora] = useState('');
+
+  // Disponibilidad por fecha
+  const [citasOcupadas, setCitasOcupadas] = useState<CitaOcupada[]>([]);
+  const [cargandoDisponibilidad, setCargandoDisponibilidad] = useState(false);
 
   const [enviando, setEnviando] = useState(false);
   const [mensajeExito, setMensajeExito] = useState(false);
@@ -124,6 +153,45 @@ export default function CatalogoPage() {
   const [citasEncontradas, setCitasEncontradas] = useState<CitaEncontrada[] | null>(null);
   const [errorConsulta, setErrorConsulta] = useState('');
 
+  useEffect(() => {
+    const cargarDisponibilidad = async () => {
+      if (!fecha) {
+        setCitasOcupadas([]);
+        return;
+      }
+
+      setCargandoDisponibilidad(true);
+      const { data, error: availError } = await supabase
+        .from('appointments')
+        .select('start_time, end_time, status')
+        .eq('appointment_date', fecha);
+
+      setCargandoDisponibilidad(false);
+
+      if (!availError && data) {
+        const activas = data.filter(
+          (c) => (c.status || '').toLowerCase() !== 'cancelada' && (c.status || '').toLowerCase() !== 'cancelled'
+        );
+        setCitasOcupadas(activas);
+      } else {
+        setCitasOcupadas([]);
+      }
+    };
+
+    cargarDisponibilidad();
+  }, [fecha]);
+
+  const esHorarioOcupado = (slotHora: string): boolean => {
+    const slotInicio = horaAMinutos(slotHora);
+    const slotFin = slotInicio + 60;
+
+    return citasOcupadas.some((cita) => {
+      const citaInicio = horaAMinutos(cita.start_time || '');
+      const citaFin = cita.end_time ? horaAMinutos(cita.end_time) : citaInicio + 60;
+      return slotInicio < citaFin && slotFin > citaInicio;
+    });
+  };
+
   const abrirAgendaConServicio = (servicio: Servicio) => {
     setServicioSeleccionado(servicio);
     setMensajeExito(false);
@@ -136,6 +204,7 @@ export default function CatalogoPage() {
     setTelefono('');
     setFecha('');
     setHora('');
+    setCitasOcupadas([]);
     setError('');
     setMensajeExito(false);
     setUrlWhatsApp('');
@@ -144,6 +213,11 @@ export default function CatalogoPage() {
   const handleAgendar = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!servicioSeleccionado) return;
+
+    if (esHorarioOcupado(hora)) {
+      setError('Ese horario ya está ocupado en la fecha elegida. Selecciona otro espacio disponible.');
+      return;
+    }
 
     setEnviando(true);
     setError('');
@@ -257,7 +331,7 @@ export default function CatalogoPage() {
               Catálogo de Servicios
             </h1>
             <p className="text-xs sm:text-sm text-zinc-400 mt-2.5 max-w-xl leading-relaxed">
-              Selecciona un servicio para solicitar fecha y hora. Cada reserva se registra en el sistema y puedes enviar el aviso directo por WhatsApp.
+              Selecciona un servicio y consulta los horarios disponibles para la fecha elegida. Cada cita se gestiona en bloques de 1 hora.
             </p>
           </div>
 
@@ -322,7 +396,7 @@ export default function CatalogoPage() {
       {/* Modal Agendar Cita */}
       {servicioSeleccionado && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-[#13151a] text-zinc-100 rounded-xl max-w-md w-full p-6 border border-white/15 shadow-2xl relative">
+          <div className="bg-[#13151a] text-zinc-100 rounded-xl max-w-md w-full p-6 border border-white/15 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button
               type="button"
               onClick={cerrarModalAgenda}
@@ -411,7 +485,7 @@ export default function CatalogoPage() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-medium text-zinc-300 mb-1">
                         Fecha
@@ -419,7 +493,11 @@ export default function CatalogoPage() {
                       <input
                         type="date"
                         value={fecha}
-                        onChange={(e) => setFecha(e.target.value)}
+                        onChange={(e) => {
+                          setFecha(e.target.value);
+                          setHora('');
+                          setError('');
+                        }}
                         className="w-full px-3 py-2 bg-[#0c0d10] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-amber-200/40"
                         required
                       />
@@ -427,16 +505,67 @@ export default function CatalogoPage() {
 
                     <div>
                       <label className="block text-xs font-medium text-zinc-300 mb-1">
-                        Hora
+                        Hora seleccionada
                       </label>
                       <input
                         type="time"
                         value={hora}
-                        onChange={(e) => setHora(e.target.value)}
+                        onChange={(e) => {
+                          setHora(e.target.value);
+                          setError('');
+                        }}
                         className="w-full px-3 py-2 bg-[#0c0d10] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-amber-200/40"
                         required
                       />
                     </div>
+                  </div>
+
+                  {/* Espacios disponibles para la fecha elegida */}
+                  <div className="pt-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[11px] font-medium text-zinc-300">
+                        Espacios del día
+                      </span>
+                      {fecha && (
+                        <span className="text-[11px] text-zinc-500">
+                          {cargandoDisponibilidad ? 'Consultando...' : fecha}
+                        </span>
+                      )}
+                    </div>
+
+                    {!fecha ? (
+                      <p className="text-[11px] text-zinc-500 bg-[#0c0d10] border border-white/[0.06] rounded-lg px-3 py-2.5">
+                        Selecciona una fecha para ver los horarios libres y ocupados.
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 bg-[#0c0d10] border border-white/[0.08] rounded-lg p-2.5">
+                        {HORARIOS_BASE.map((slot) => {
+                          const ocupado = esHorarioOcupado(slot);
+                          const seleccionado = hora === slot;
+
+                          return (
+                            <button
+                              key={slot}
+                              type="button"
+                              disabled={ocupado}
+                              onClick={() => {
+                                setHora(slot);
+                                setError('');
+                              }}
+                              className={`py-1.5 px-2 rounded text-[11px] font-medium border transition-colors ${
+                                ocupado
+                                  ? 'bg-rose-500/10 text-rose-400/70 border-rose-500/20 line-through cursor-not-allowed'
+                                  : seleccionado
+                                  ? 'bg-white text-[#0c0d10] border-white cursor-pointer'
+                                  : 'bg-white/[0.03] hover:bg-white/[0.08] text-zinc-200 border-white/10 cursor-pointer'
+                              }`}
+                            >
+                              {slot}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
 
                   {error && (
