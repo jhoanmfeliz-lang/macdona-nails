@@ -12,11 +12,11 @@ const TELEFONO_SALON_WHATSAPP = '8298283763';
 
 interface Servicio {
   id: string;
+  codigo: string;
   nombre: string;
   descripcion: string;
-  emoji: string;
-  duracion?: string;
-  categoria?: string;
+  duracion: string;
+  categoria: string;
 }
 
 interface CitaEncontrada {
@@ -31,75 +31,75 @@ interface CitaEncontrada {
 const SERVICIOS: Servicio[] = [
   {
     id: 'pintado-en-gel',
+    codigo: '01',
     nombre: 'Pintado en Gel',
-    descripcion: 'Esmaltado en gel de alto brillo y acabado uniforme sobre uña natural con secado UV.',
-    emoji: '💅',
+    descripcion: 'Esmaltado en gel de acabado uniforme y brillo limpio sobre uña natural.',
     duracion: '45 min',
-    categoria: 'Manicura',
+    categoria: 'Uñas naturales',
   },
   {
     id: 'acrilicas-full',
+    codigo: '02',
     nombre: 'Uñas Acrílicas Full Set',
-    descripcion: 'Set completo de acrílico esculpido con forma a elección y acabado profesional duradero.',
-    emoji: '✨',
+    descripcion: 'Estructura completa esculpida a medida con acabado equilibrado y resistente.',
     duracion: '90 min',
     categoria: 'Acrílico',
   },
   {
     id: 'retoque-acrilico',
+    codigo: '03',
     nombre: 'Retoque de Acrílico',
-    descripcion: 'Relleno de crecimiento, nivelación de estructura, limado y nuevo esmaltado.',
-    emoji: '💎',
+    descripcion: 'Relleno de crecimiento, balance de ápice, limado y renovación de esmalte.',
     duracion: '60 min',
     categoria: 'Mantenimiento',
   },
   {
     id: 'sistema-sin-olor',
+    codigo: '04',
     nombre: 'Sistema sin olor',
-    descripcion: 'Extensiones ligeras, resistentes e inodoras con acabado limpio y estilizado.',
-    emoji: '🌸',
+    descripcion: 'Extensiones ligeras y firmes con acabado limpio y sin olor penetrante.',
     duracion: '75 min',
-    categoria: 'Especial',
+    categoria: 'Sistemas',
   },
   {
     id: 'manicure-clasica',
+    codigo: '05',
     nombre: 'Manicura Clásica',
-    descripcion: 'Cuidado completo de cutículas, limado anatómico, hidratación profunda y esmaltado.',
-    emoji: '🤍',
+    descripcion: 'Limpieza de cutícula, limado preciso, hidratación y esmaltado tradicional.',
     duracion: '40 min',
-    categoria: 'Manicura',
+    categoria: 'Cuidado',
   },
   {
     id: 'pedicure-spa',
+    codigo: '06',
     nombre: 'Pedicura Spa',
-    descripcion: 'Tratamiento relajante para pies con exfoliación herbal, masajes e hidratación.',
-    emoji: '🦶',
+    descripcion: 'Cuidado integral de pies con exfoliación suave, limpieza e hidratación.',
     duracion: '60 min',
-    categoria: 'Pedicura',
+    categoria: 'Cuidado',
   },
   {
     id: 'pedicure-gel',
+    codigo: '07',
     nombre: 'Pedicura en Gel',
-    descripcion: 'Cuidado integral de pies complementado con esmaltado en gel de larga duración.',
-    emoji: '🌺',
+    descripcion: 'Limpieza y acondicionamiento de pies con esmaltado en gel de larga duración.',
     duracion: '60 min',
     categoria: 'Pedicura',
   },
   {
     id: 'diseno-nail-art',
+    codigo: '08',
     nombre: 'Diseño / Nail Art',
-    descripcion: 'Personalización de uñas con mano alzada, francesas modernas, pedrería o efectos.',
-    emoji: '🎨',
+    descripcion: 'Detalles sobrios, francesas, líneas finas o acabados personalizados.',
     duracion: '30 min',
-    categoria: 'Arte',
+    categoria: 'Detalle',
   },
   {
     id: 'retiro-unas',
+    codigo: '09',
     nombre: 'Retiro Seguro de Uñas',
-    descripcion: 'Remoción cuidadosa de sistemas acrílicos o gel protegiendo la salud de la uña.',
-    emoji: '🧴',
+    descripcion: 'Remoción controlada de acrílico o gel cuidando la lámina natural.',
     duracion: '30 min',
-    categoria: 'Remoción',
+    categoria: 'Cuidado',
   },
 ];
 
@@ -172,19 +172,19 @@ export default function CatalogoPage() {
 
     if (dbError) {
       if (dbError.code === '23505') {
-        setError('Ese día y hora ya están ocupados. Por favor elige otro horario.');
+        setError('Ese día y hora ya están ocupados. Elige otro horario.');
       } else {
-        setError(`No se pudo procesar la solicitud: ${dbError.message}`);
+        setError(`No se pudo enviar la cita: ${dbError.message}`);
       }
     } else {
       const textoWA = encodeURIComponent(
         `Hola Macdona Nails, acabo de solicitar una cita desde la web.\n\n` +
-          `👤 *Cliente:* ${nombre.trim()}\n` +
-          `📱 *Teléfono:* ${telefonoLimpio}\n` +
-          `💅 *Servicio:* ${servicioSeleccionado.nombre}\n` +
-          `📅 *Fecha:* ${fecha}\n` +
-          `⏰ *Hora:* ${hora} (hasta ${horaFin})\n` +
-          `📌 *Estado:* Pendiente de confirmación`
+          `Cliente: ${nombre.trim()}\n` +
+          `Teléfono: ${telefonoLimpio}\n` +
+          `Servicio: ${servicioSeleccionado.nombre}\n` +
+          `Fecha: ${fecha}\n` +
+          `Hora: ${hora} (hasta ${horaFin})\n` +
+          `Estado: Pendiente`
       );
       setUrlWhatsApp(`https://wa.me/1${TELEFONO_SALON_WHATSAPP}?text=${textoWA}`);
       setMensajeExito(true);
@@ -217,29 +217,19 @@ export default function CatalogoPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0b0d14] text-slate-100 pb-20 antialiased selection:bg-[#d946ef] selection:text-white">
-      {/* Glow de fondo para efecto Luxury */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-fuchsia-600/15 rounded-full blur-[128px]"></div>
-        <div className="absolute top-1/2 -right-40 w-96 h-96 bg-purple-600/10 rounded-full blur-[128px]"></div>
-      </div>
-
-      {/* Header Prémium */}
-      <header className="bg-[#121522]/80 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-fuchsia-600 to-pink-500 flex items-center justify-center text-xl shadow-lg shadow-fuchsia-500/20">
-              💅
-            </div>
-            <div>
-              <span className="font-extrabold text-base tracking-wider text-white block leading-none">
-                MACDONA NAILS
-              </span>
-              <span className="text-[10px] uppercase font-medium tracking-widest text-fuchsia-400">
-                Studio & Care
-              </span>
-            </div>
+    <main className="min-h-screen bg-[#0e0f12] text-[#f3f4f6] pb-20 antialiased">
+      {/* Encabezado */}
+      <header className="bg-[#0e0f12]/90 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <div className="flex items-baseline gap-3">
+            <span className="font-semibold text-sm sm:text-base tracking-[0.18em] text-white">
+              MACDONA NAILS
+            </span>
+            <span className="hidden sm:inline text-xs text-zinc-500">
+              Agenda y Servicios
+            </span>
           </div>
+
           <button
             type="button"
             onClick={() => {
@@ -248,56 +238,50 @@ export default function CatalogoPage() {
               setErrorConsulta('');
               setTelefonoConsulta('');
             }}
-            className="text-xs font-semibold px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-fuchsia-300 border border-fuchsia-500/30 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-fuchsia-500/10"
+            className="text-xs font-medium px-3.5 py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 border border-white/10 transition-colors cursor-pointer"
           >
-            Consultar mi cita
+            Consultar cita
           </button>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative z-10 max-w-4xl mx-auto px-4 pt-12 pb-8 text-center">
-        <span className="inline-block text-[11px] font-bold uppercase tracking-widest text-fuchsia-400 bg-fuchsia-500/10 px-3.5 py-1 rounded-full border border-fuchsia-500/20 mb-3">
-          Reserva en línea
-        </span>
-        <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
-          Catálogo de Servicios
-        </h1>
-        <p className="text-sm sm:text-base text-slate-400 mt-3 max-w-xl mx-auto leading-relaxed">
-          Elige el tratamiento ideal para tus uñas, selecciona tu horario preferido y agenda en segundos.
+      {/* Título de sección */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-8 border-b border-white/[0.07]">
+        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-400 mb-2">
+          Servicios disponibles
         </p>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <h1 className="text-2xl sm:text-4xl font-semibold tracking-tight text-white">
+            Catálogo de Servicios
+          </h1>
+          <p className="text-xs sm:text-sm text-zinc-400 max-w-md">
+            Selecciona el servicio de tu preferencia para solicitar fecha y hora.
+          </p>
+        </div>
       </section>
 
-      {/* Grid de Servicios */}
-      <section className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 mt-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Listado de servicios */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {SERVICIOS.map((servicio) => (
             <article
               key={servicio.id}
-              className="group bg-[#161a2b]/90 hover:bg-[#1a1f35] rounded-2xl p-6 border border-white/10 hover:border-fuchsia-500/40 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-fuchsia-500/5 flex flex-col justify-between"
+              className="bg-[#14161b] rounded-xl p-6 border border-white/10 hover:border-white/20 transition-colors flex flex-col justify-between"
             >
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center text-2xl shadow-inner">
-                    {servicio.emoji}
-                  </div>
-                  {servicio.duracion && (
-                    <span className="text-[11px] font-medium text-slate-400 bg-white/5 px-2.5 py-1 rounded-md border border-white/5">
-                      ⏱️ {servicio.duracion}
-                    </span>
-                  )}
+                <div className="flex items-center justify-between text-xs text-zinc-400 mb-4">
+                  <span className="font-mono text-[11px] text-zinc-500">
+                    {servicio.codigo} — {servicio.categoria}
+                  </span>
+                  <span className="text-[11px] text-zinc-400">
+                    {servicio.duracion}
+                  </span>
                 </div>
 
-                {servicio.categoria && (
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-fuchsia-400 block mb-1">
-                    {servicio.categoria}
-                  </span>
-                )}
-
-                <h2 className="text-lg font-bold text-white group-hover:text-fuchsia-200 transition-colors">
+                <h2 className="text-base font-semibold text-white">
                   {servicio.nombre}
                 </h2>
-                <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
                   {servicio.descripcion}
                 </p>
               </div>
@@ -305,7 +289,7 @@ export default function CatalogoPage() {
               <button
                 type="button"
                 onClick={() => abrirAgendaConServicio(servicio)}
-                className="mt-6 w-full py-3 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-500 hover:to-pink-500 text-white font-semibold text-xs tracking-wider uppercase rounded-xl shadow-lg shadow-fuchsia-600/20 hover:shadow-fuchsia-600/40 transition-all duration-200 cursor-pointer active:scale-[0.99]"
+                className="mt-6 w-full py-2.5 bg-white text-[#0e0f12] hover:bg-zinc-200 font-medium text-xs rounded-lg transition-colors cursor-pointer"
               >
                 Agendar cita
               </button>
@@ -316,29 +300,30 @@ export default function CatalogoPage() {
 
       {/* Modal Agendar Cita */}
       {servicioSeleccionado && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-[#161a2b] text-slate-100 rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative border border-white/15">
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-[#14161b] text-zinc-100 rounded-xl max-w-md w-full p-6 border border-white/15 shadow-2xl relative">
             <button
               type="button"
               onClick={cerrarModalAgenda}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white text-lg font-bold transition-colors cursor-pointer w-8 h-8 rounded-full bg-white/5 flex items-center justify-center"
+              aria-label="Cerrar"
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white text-sm px-2 py-1 rounded transition-colors cursor-pointer"
             >
               ✕
             </button>
 
             {mensajeExito ? (
-              <div className="text-center py-4 space-y-4">
-                <div className="w-14 h-14 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-2xl flex items-center justify-center mx-auto text-2xl font-bold">
-                  ✓
-                </div>
+              <div className="py-3 space-y-4">
                 <div>
-                  <h3 className="text-xl font-extrabold text-white">
-                    ¡Solicitud registrada!
+                  <p className="text-[11px] uppercase tracking-[0.16em] text-emerald-400 font-medium">
+                    Registro completado
+                  </p>
+                  <h3 className="text-lg font-semibold text-white mt-1">
+                    Solicitud enviada
                   </h3>
-                  <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                    Tu cita de <strong className="text-slate-200">{servicioSeleccionado.nombre}</strong> para el{' '}
-                    <strong className="text-slate-200">{fecha}</strong> a las{' '}
-                    <strong className="text-slate-200">{hora}</strong> ha sido enviada con éxito.
+                  <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">
+                    <span className="text-zinc-200 font-medium">{servicioSeleccionado.nombre}</span> el{' '}
+                    <span className="text-zinc-200 font-medium">{fecha}</span> a las{' '}
+                    <span className="text-zinc-200 font-medium">{hora}</span>.
                   </p>
                 </div>
 
@@ -347,93 +332,93 @@ export default function CatalogoPage() {
                     href={urlWhatsApp}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/30 transition-all cursor-pointer"
+                    className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium rounded-lg flex items-center justify-center transition-colors"
                   >
-                    <span>💬</span> Notificar por WhatsApp ahora
+                    Enviar aviso por WhatsApp
                   </a>
                 )}
 
                 <button
                   type="button"
                   onClick={cerrarModalAgenda}
-                  className="w-full py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+                  className="w-full py-2.5 bg-white/[0.05] hover:bg-white/[0.09] text-zinc-300 text-xs font-medium rounded-lg border border-white/10 transition-colors cursor-pointer"
                 >
                   Volver al catálogo
                 </button>
               </div>
             ) : (
               <>
-                <div className="mb-5 pb-4 border-b border-white/10">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-fuchsia-400">
-                    Servicio a reservar
-                  </span>
-                  <h3 className="text-xl font-bold text-white mt-1">
+                <div className="mb-5 pb-4 border-b border-white/10 pr-6">
+                  <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">
+                    {servicioSeleccionado.categoria} · {servicioSeleccionado.duracion}
+                  </p>
+                  <h3 className="text-lg font-semibold text-white mt-1">
                     {servicioSeleccionado.nombre}
                   </h3>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-zinc-400 mt-1">
                     {servicioSeleccionado.descripcion}
                   </p>
                 </div>
 
-                <form onSubmit={handleAgendar} className="space-y-4 text-left">
+                <form onSubmit={handleAgendar} className="space-y-3.5">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Nombre completo
+                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                      Nombre
                     </label>
                     <input
                       type="text"
-                      placeholder="Ej. María García"
+                      placeholder="Nombre completo"
                       value={nombre}
                       onChange={(e) => setNombre(e.target.value)}
-                      className="w-full px-4 py-3 bg-[#0f121d] border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500 transition-colors"
+                      className="w-full px-3.5 py-2.5 bg-[#0e0f12] border border-white/10 rounded-lg text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/30"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Teléfono / WhatsApp
+                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                      Teléfono
                     </label>
                     <input
                       type="tel"
                       placeholder="Ej. 8298283763"
                       value={telefono}
                       onChange={(e) => setTelefono(e.target.value)}
-                      className="w-full px-4 py-3 bg-[#0f121d] border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500 transition-colors"
+                      className="w-full px-3.5 py-2.5 bg-[#0e0f12] border border-white/10 rounded-lg text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/30"
                       required
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                      <label className="block text-xs font-medium text-zinc-300 mb-1">
                         Fecha
                       </label>
                       <input
                         type="date"
                         value={fecha}
                         onChange={(e) => setFecha(e.target.value)}
-                        className="w-full px-3.5 py-2.5 bg-[#0f121d] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500 transition-colors"
+                        className="w-full px-3 py-2 bg-[#0e0f12] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-white/30"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                      <label className="block text-xs font-medium text-zinc-300 mb-1">
                         Hora
                       </label>
                       <input
                         type="time"
                         value={hora}
                         onChange={(e) => setHora(e.target.value)}
-                        className="w-full px-3.5 py-2.5 bg-[#0f121d] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500 transition-colors"
+                        className="w-full px-3 py-2 bg-[#0e0f12] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-white/30"
                         required
                       />
                     </div>
                   </div>
 
                   {error && (
-                    <p className="text-xs text-rose-400 font-medium text-center pt-1">
+                    <p className="text-xs text-rose-400 pt-1">
                       {error}
                     </p>
                   )}
@@ -441,9 +426,9 @@ export default function CatalogoPage() {
                   <button
                     type="submit"
                     disabled={enviando}
-                    className="w-full mt-3 py-3 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-500 hover:to-pink-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-fuchsia-600/30 transition-all disabled:opacity-50 cursor-pointer"
+                    className="w-full mt-2 py-2.5 bg-white text-[#0e0f12] hover:bg-zinc-200 font-medium text-xs rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
                   >
-                    {enviando ? 'Procesando cita...' : 'Confirmar Reserva'}
+                    {enviando ? 'Enviando...' : 'Enviar solicitud'}
                   </button>
                 </form>
               </>
@@ -454,86 +439,85 @@ export default function CatalogoPage() {
 
       {/* Modal Consulta de Estado de Citas */}
       {modalConsultaAbierto && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-[#161a2b] text-slate-100 rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative border border-white/15">
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-[#14161b] text-zinc-100 rounded-xl max-w-md w-full p-6 border border-white/15 shadow-2xl relative">
             <button
               type="button"
               onClick={() => setModalConsultaAbierto(false)}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white text-lg font-bold transition-colors cursor-pointer w-8 h-8 rounded-full bg-white/5 flex items-center justify-center"
+              aria-label="Cerrar"
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white text-sm px-2 py-1 rounded transition-colors cursor-pointer"
             >
               ✕
             </button>
 
-            <h3 className="text-lg font-extrabold text-white mb-1">
+            <h3 className="text-base font-semibold text-white mb-1">
               Consultar estado de cita
             </h3>
-            <p className="text-xs text-slate-400 mb-5">
-              Ingresa el número telefónico utilizado para tu reservación.
+            <p className="text-xs text-zinc-400 mb-4">
+              Escribe el número con el que registraste tu cita.
             </p>
 
-            <form onSubmit={handleBuscarCitas} className="space-y-3">
-              <div className="flex gap-2">
-                <input
-                  type="tel"
-                  placeholder="Ej. 8298283763"
-                  value={telefonoConsulta}
-                  onChange={(e) => setTelefonoConsulta(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-[#0f121d] border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500 transition-colors"
-                  required
-                />
-                <button
-                  type="submit"
-                  disabled={buscandoCitas}
-                  className="px-4 py-2.5 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-semibold text-xs rounded-xl transition-all disabled:opacity-50 cursor-pointer whitespace-nowrap shadow-md shadow-fuchsia-600/20"
-                >
-                  {buscandoCitas ? 'Buscando...' : 'Buscar'}
-                </button>
-              </div>
+            <form onSubmit={handleBuscarCitas} className="flex gap-2">
+              <input
+                type="tel"
+                placeholder="Ej. 8298283763"
+                value={telefonoConsulta}
+                onChange={(e) => setTelefonoConsulta(e.target.value)}
+                className="w-full px-3.5 py-2 bg-[#0e0f12] border border-white/10 rounded-lg text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/30"
+                required
+              />
+              <button
+                type="submit"
+                disabled={buscandoCitas}
+                className="px-4 py-2 bg-white text-[#0e0f12] hover:bg-zinc-200 font-medium text-xs rounded-lg transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
+              >
+                {buscandoCitas ? 'Buscando...' : 'Buscar'}
+              </button>
             </form>
 
             {errorConsulta && (
-              <p className="text-xs text-rose-400 mt-3 text-center font-medium">
+              <p className="text-xs text-rose-400 mt-3">
                 {errorConsulta}
               </p>
             )}
 
             {citasEncontradas && (
-              <div className="mt-5 pt-4 border-t border-white/10 max-h-60 overflow-y-auto space-y-3 custom-scrollbar">
+              <div className="mt-4 pt-4 border-t border-white/10 max-h-60 overflow-y-auto space-y-2.5">
                 {citasEncontradas.length === 0 ? (
-                  <p className="text-xs text-slate-400 text-center py-4">
-                    No se encontraron citas registradas con este número.
+                  <p className="text-xs text-zinc-400 text-center py-3">
+                    No se encontraron citas con ese número.
                   </p>
                 ) : (
                   citasEncontradas.map((cita) => {
                     const statusLower = (cita.status || '').toLowerCase();
-                    let badgeBg = 'bg-amber-500/15 text-amber-300 border-amber-500/30';
+                    let badgeStyle = 'bg-amber-500/10 text-amber-300 border-amber-500/20';
                     let badgeLabel = cita.status;
 
                     if (statusLower === 'confirmada' || statusLower === 'confirmed') {
-                      badgeBg = 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+                      badgeStyle = 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20';
                       badgeLabel = 'Confirmada';
                     } else if (statusLower === 'cancelada' || statusLower === 'cancelled') {
-                      badgeBg = 'bg-rose-500/15 text-rose-300 border-rose-500/30';
+                      badgeStyle = 'bg-rose-500/10 text-rose-300 border-rose-500/20';
                       badgeLabel = 'Cancelada';
                     } else if (statusLower === 'pendiente' || statusLower === 'pending') {
-                      badgeBg = 'bg-amber-500/15 text-amber-300 border-amber-500/30';
+                      badgeStyle = 'bg-amber-500/10 text-amber-300 border-amber-500/20';
                       badgeLabel = 'Pendiente';
                     }
 
                     return (
                       <div
                         key={cita.id}
-                        className="p-3.5 bg-[#0f121d] rounded-2xl border border-white/5 text-left flex justify-between items-center"
+                        className="p-3 bg-[#0e0f12] rounded-lg border border-white/10 flex justify-between items-center gap-3"
                       >
                         <div>
-                          <p className="text-xs font-bold text-white">
-                            {cita.service_name || 'Servicio de uñas'}
+                          <p className="text-xs font-medium text-white">
+                            {cita.service_name || 'Servicio'}
                           </p>
-                          <p className="text-[11px] text-slate-400 mt-1">
-                            📅 {cita.appointment_date} · ⏰ {cita.start_time}
+                          <p className="text-[11px] text-zinc-400 mt-0.5">
+                            {cita.appointment_date} · {cita.start_time}
                           </p>
                         </div>
-                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${badgeBg}`}>
+                        <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full border shrink-0 ${badgeStyle}`}>
                           {badgeLabel}
                         </span>
                       </div>
