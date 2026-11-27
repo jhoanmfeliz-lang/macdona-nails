@@ -217,16 +217,17 @@ export default function CatalogoPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0e0f12] text-[#f3f4f6] pb-20 antialiased">
+    <main className="min-h-screen bg-[#0c0d10] text-[#f3f4f6] pb-24 antialiased">
       {/* Encabezado */}
-      <header className="bg-[#0e0f12]/90 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
+      <header className="bg-[#0c0d10]/95 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-baseline gap-3">
-            <span className="font-semibold text-sm sm:text-base tracking-[0.18em] text-white">
+          <div className="flex items-center gap-3">
+            <span className="h-2 w-2 rounded-full bg-amber-300/80" />
+            <span className="font-semibold text-sm sm:text-base tracking-[0.2em] text-white">
               MACDONA NAILS
             </span>
-            <span className="hidden sm:inline text-xs text-zinc-500">
-              Agenda y Servicios
+            <span className="hidden md:inline text-xs text-zinc-500 border-l border-white/10 pl-3">
+              Estudio de Cuidado de Uñas
             </span>
           </div>
 
@@ -238,61 +239,81 @@ export default function CatalogoPage() {
               setErrorConsulta('');
               setTelefonoConsulta('');
             }}
-            className="text-xs font-medium px-3.5 py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 border border-white/10 transition-colors cursor-pointer"
+            className="text-xs font-medium px-4 py-2 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-zinc-100 border border-white/10 transition-colors cursor-pointer"
           >
             Consultar cita
           </button>
         </div>
       </header>
 
-      {/* Título de sección */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-8 border-b border-white/[0.07]">
-        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-400 mb-2">
-          Servicios disponibles
-        </p>
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <h1 className="text-2xl sm:text-4xl font-semibold tracking-tight text-white">
-            Catálogo de Servicios
-          </h1>
-          <p className="text-xs sm:text-sm text-zinc-400 max-w-md">
-            Selecciona el servicio de tu preferencia para solicitar fecha y hora.
-          </p>
+      {/* Cabecera editorial */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-9 border-b border-white/10">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-amber-200/75 mb-2.5">
+              Reservaciones y Servicios
+            </p>
+            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+              Catálogo de Servicios
+            </h1>
+            <p className="text-xs sm:text-sm text-zinc-400 mt-2.5 max-w-xl leading-relaxed">
+              Selecciona un servicio para solicitar fecha y hora. Cada reserva se registra en el sistema y puedes enviar el aviso directo por WhatsApp.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400">
+            <div className="px-3.5 py-2 rounded-lg bg-[#13151a] border border-white/10">
+              <span className="text-zinc-500 mr-1.5">Servicios:</span>
+              <span className="text-zinc-200 font-medium">{SERVICIOS.length} disponibles</span>
+            </div>
+            <div className="px-3.5 py-2 rounded-lg bg-[#13151a] border border-white/10">
+              <span className="text-zinc-500 mr-1.5">Bloque:</span>
+              <span className="text-zinc-200 font-medium">1 hora por cita</span>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Listado de servicios */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {/* Grid de servicios */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-9">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {SERVICIOS.map((servicio) => (
             <article
               key={servicio.id}
-              className="bg-[#14161b] rounded-xl p-6 border border-white/10 hover:border-white/20 transition-colors flex flex-col justify-between"
+              className="bg-[#13151a] rounded-xl border border-white/10 hover:border-amber-200/30 transition-colors flex flex-col justify-between overflow-hidden"
             >
-              <div>
-                <div className="flex items-center justify-between text-xs text-zinc-400 mb-4">
-                  <span className="font-mono text-[11px] text-zinc-500">
-                    {servicio.codigo} — {servicio.categoria}
-                  </span>
-                  <span className="text-[11px] text-zinc-400">
+              <div className="p-6">
+                <div className="flex items-center justify-between gap-2 pb-4 mb-4 border-b border-white/[0.07]">
+                  <div className="flex items-center gap-2.5">
+                    <span className="font-mono text-xs text-amber-200/80">
+                      {servicio.codigo}
+                    </span>
+                    <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-400">
+                      {servicio.categoria}
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-zinc-400 bg-white/[0.03] px-2.5 py-1 rounded border border-white/[0.06]">
                     {servicio.duracion}
                   </span>
                 </div>
 
-                <h2 className="text-base font-semibold text-white">
+                <h2 className="text-lg font-semibold text-white tracking-tight">
                   {servicio.nombre}
                 </h2>
-                <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
+                <p className="text-xs sm:text-[13px] text-zinc-400 mt-2.5 leading-relaxed">
                   {servicio.descripcion}
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => abrirAgendaConServicio(servicio)}
-                className="mt-6 w-full py-2.5 bg-white text-[#0e0f12] hover:bg-zinc-200 font-medium text-xs rounded-lg transition-colors cursor-pointer"
-              >
-                Agendar cita
-              </button>
+              <div className="px-6 pb-6 pt-2">
+                <button
+                  type="button"
+                  onClick={() => abrirAgendaConServicio(servicio)}
+                  className="w-full py-2.5 px-4 bg-white text-[#0c0d10] hover:bg-amber-100 font-medium text-xs tracking-wide rounded-lg transition-colors cursor-pointer"
+                >
+                  Agendar cita
+                </button>
+              </div>
             </article>
           ))}
         </div>
@@ -301,7 +322,7 @@ export default function CatalogoPage() {
       {/* Modal Agendar Cita */}
       {servicioSeleccionado && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-[#14161b] text-zinc-100 rounded-xl max-w-md w-full p-6 border border-white/15 shadow-2xl relative">
+          <div className="bg-[#13151a] text-zinc-100 rounded-xl max-w-md w-full p-6 border border-white/15 shadow-2xl relative">
             <button
               type="button"
               onClick={cerrarModalAgenda}
@@ -349,13 +370,14 @@ export default function CatalogoPage() {
             ) : (
               <>
                 <div className="mb-5 pb-4 border-b border-white/10 pr-6">
-                  <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">
-                    {servicioSeleccionado.categoria} · {servicioSeleccionado.duracion}
-                  </p>
+                  <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.16em] text-amber-200/75">
+                    <span>{servicioSeleccionado.categoria}</span>
+                    <span>{servicioSeleccionado.duracion}</span>
+                  </div>
                   <h3 className="text-lg font-semibold text-white mt-1">
                     {servicioSeleccionado.nombre}
                   </h3>
-                  <p className="text-xs text-zinc-400 mt-1">
+                  <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
                     {servicioSeleccionado.descripcion}
                   </p>
                 </div>
@@ -370,7 +392,7 @@ export default function CatalogoPage() {
                       placeholder="Nombre completo"
                       value={nombre}
                       onChange={(e) => setNombre(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-[#0e0f12] border border-white/10 rounded-lg text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/30"
+                      className="w-full px-3.5 py-2.5 bg-[#0c0d10] border border-white/10 rounded-lg text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-200/40"
                       required
                     />
                   </div>
@@ -384,7 +406,7 @@ export default function CatalogoPage() {
                       placeholder="Ej. 8298283763"
                       value={telefono}
                       onChange={(e) => setTelefono(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-[#0e0f12] border border-white/10 rounded-lg text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/30"
+                      className="w-full px-3.5 py-2.5 bg-[#0c0d10] border border-white/10 rounded-lg text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-200/40"
                       required
                     />
                   </div>
@@ -398,7 +420,7 @@ export default function CatalogoPage() {
                         type="date"
                         value={fecha}
                         onChange={(e) => setFecha(e.target.value)}
-                        className="w-full px-3 py-2 bg-[#0e0f12] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-white/30"
+                        className="w-full px-3 py-2 bg-[#0c0d10] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-amber-200/40"
                         required
                       />
                     </div>
@@ -411,7 +433,7 @@ export default function CatalogoPage() {
                         type="time"
                         value={hora}
                         onChange={(e) => setHora(e.target.value)}
-                        className="w-full px-3 py-2 bg-[#0e0f12] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-white/30"
+                        className="w-full px-3 py-2 bg-[#0c0d10] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-amber-200/40"
                         required
                       />
                     </div>
@@ -426,7 +448,7 @@ export default function CatalogoPage() {
                   <button
                     type="submit"
                     disabled={enviando}
-                    className="w-full mt-2 py-2.5 bg-white text-[#0e0f12] hover:bg-zinc-200 font-medium text-xs rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+                    className="w-full mt-2 py-2.5 bg-white text-[#0c0d10] hover:bg-amber-100 font-medium text-xs rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
                   >
                     {enviando ? 'Enviando...' : 'Enviar solicitud'}
                   </button>
@@ -440,7 +462,7 @@ export default function CatalogoPage() {
       {/* Modal Consulta de Estado de Citas */}
       {modalConsultaAbierto && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-[#14161b] text-zinc-100 rounded-xl max-w-md w-full p-6 border border-white/15 shadow-2xl relative">
+          <div className="bg-[#13151a] text-zinc-100 rounded-xl max-w-md w-full p-6 border border-white/15 shadow-2xl relative">
             <button
               type="button"
               onClick={() => setModalConsultaAbierto(false)}
@@ -463,13 +485,13 @@ export default function CatalogoPage() {
                 placeholder="Ej. 8298283763"
                 value={telefonoConsulta}
                 onChange={(e) => setTelefonoConsulta(e.target.value)}
-                className="w-full px-3.5 py-2 bg-[#0e0f12] border border-white/10 rounded-lg text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/30"
+                className="w-full px-3.5 py-2 bg-[#0c0d10] border border-white/10 rounded-lg text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-200/40"
                 required
               />
               <button
                 type="submit"
                 disabled={buscandoCitas}
-                className="px-4 py-2 bg-white text-[#0e0f12] hover:bg-zinc-200 font-medium text-xs rounded-lg transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
+                className="px-4 py-2 bg-white text-[#0c0d10] hover:bg-amber-100 font-medium text-xs rounded-lg transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
               >
                 {buscandoCitas ? 'Buscando...' : 'Buscar'}
               </button>
@@ -507,7 +529,7 @@ export default function CatalogoPage() {
                     return (
                       <div
                         key={cita.id}
-                        className="p-3 bg-[#0e0f12] rounded-lg border border-white/10 flex justify-between items-center gap-3"
+                        className="p-3 bg-[#0c0d10] rounded-lg border border-white/10 flex justify-between items-center gap-3"
                       >
                         <div>
                           <p className="text-xs font-medium text-white">
